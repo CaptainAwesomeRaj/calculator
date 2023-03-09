@@ -1,157 +1,35 @@
 import React,{useReducer} from "react";
 import ReactDOM from "react-dom/client";
 import "./styles.css";
-function evaluate (exp){
-  let ex = exp.replaceAll("×","*");
-  ex = ex.replaceAll("−","-");
-  ex = ex.replaceAll("÷","/");
-  ex = eval(ex);
-  return ex.toString();
-}
+import clear from "./clear.js";
+import del from "./delete.js";
+import operation from"./operation.js";
+import decimal from "./decimal.js";
+import equal from "./equal.js";
+import number from"./number.js";
+
 function render({expression,result},{todo}){
-  if(todo === "AC"){
-    return{
-      expression:"0",
-      result:"0"
-    };
-  }
-  if(todo === "DEL"){
-    if(expression.length > 1){
-      let temp = 0;
-      if( ("0" <= expression[expression.length - 2] && expression[expression.length - 2] <="9") || expression[expression.length - 2] === "."){
-        temp = evaluate(expression.substr(0,expression.length - 1));
-      }
-      else{
-        temp = evaluate(expression.substr(0,expression.length - 2));
-      }
-      return{
-        expression : expression.substr(0,expression.length - 1),
-        result : temp
-      };
-    }
-    else{
-      return{
-        expression:"0",
-        result:"0"
-      };
-    }
-  }
-  if(todo === "÷"){
-    if(("0" <= expression[expression.length - 1] && expression[expression.length - 1] <= "9") || expression[expression.length - 1] === "."){
-      return{
-        expression:expression + "÷",
-        result:result
-      }
-    }
-    else{
-      return{
-        expression:expression,
-        result:result
-      };
-    }
-  }
-
-  if(todo === "×"){
-    if(("0" <= expression[expression.length - 1] && expression[expression.length - 1] <= "9") || expression[expression.length - 1] === "."){
-      return{
-        expression:expression + "×",
-        result:result
-      }
-    }
-    else{
-      return{
-        expression:expression,
-        result:result
-      };
-    }
-  }
-
-  if(todo === "−"){
-    if(("0" <= expression[expression.length - 1] && expression[expression.length - 1] <= "9") || expression[expression.length - 1] === "."){
-      return{
-        expression:expression + "−",
-        result:result
-      }
-    }
-    else{
-      return{
-        expression:expression,
-        result:result
-      };
-    }
-  }
-
-  if(todo === "+"){
-    if(("0" <= expression[expression.length - 1] && expression[expression.length - 1] <= "9") || expression[expression.length - 1] === "."){
-      return{
-        expression:expression + "+",
-        result:result
-      }
-    }
-    else{
-      return{
-        expression:expression,
-        result:result
-      };
-    }
-  }
-
-  if(todo === "%"){
-    if(("0" <= expression[expression.length - 1] && expression[expression.length - 1] <= "9") || expression[expression.length - 1] === "."){
-      return{
-        expression:expression + "%",
-        result:result
-      }
-    }
-    else{
-      return{
-        expression:expression,
-        result:result
-      };
-    }
-  }
-
-  if(todo === "."){
-    for(let i = expression.length - 1; i > -1; --i){
-      if("0" <= expression[i] && expression[i] <= "9"){
-        continue;
-      }
-      if(expression[i] === "."){
-        return{
-          expression:expression,
-          result:result
-        }
-      }
-      return{
-        expression:expression + ".",
-        result:result
-      }
-    }
-    return{
-      expression:expression + ".",
-      result:result
-    }
-  }
-  if(todo === "="){
-    return{
-      expression:result,
-      result:result
-    }
-  }
 
   if("0" <= todo && todo <= "9"){
-    if(expression.length === 1 && expression[0] === "0"){
-      return{
-        expression:todo,
-        result:todo
-      }
-    }
-    else{
-      return{
-        expression:expression + todo,
-        result:evaluate(expression + todo)
-      };
-    }
+    return number(expression,todo);
+  }
+
+  switch (todo) {
+    case "AC":
+      return clear();
+  
+    case "DEL":
+      return del(expression);
+    
+    case ".":
+      return decimal(expression,result);
+    
+    case "=":
+      return equal(expression);
+
+    default:
+      return operation(expression,todo,result);
+
   }
 }
 function Root(){
